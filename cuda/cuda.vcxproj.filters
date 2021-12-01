@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{017759f5-03da-4e98-8640-b70d31b1427c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{38e7722b-66a5-48f2-96a2-0c6611185c57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binarization">
+      <UniqueIdentifier>{1e51e86d-f853-4833-ac33-ca4835db3a6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{a20ec505-ccf6-4edf-92bf-351c4884a63b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\common.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\timer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cudaMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\logMessage.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="binarization\binarizeEngine.cpp">
+      <Filter>Binarization</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\timer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\helper_cuda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\typedef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\logMessage.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="binarization\binarizeEngine.h">
+      <Filter>Binarization</Filter>
+    </ClInclude>
+    <ClInclude Include="binarization\binarizeGPU.cuh">
+      <Filter>Binarization</Filter>
+    </ClInclude>
+    <ClInclude Include="binarization\binarizeKernel.cuh">
+      <Filter>Binarization</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="binarization\binarizeGPU.cu">
+      <Filter>Binarization</Filter>
+    </CudaCompile>
+    <CudaCompile Include="binarization\binarizeKernel.cu">
+      <Filter>Binarization</Filter>
+    </CudaCompile>
+  </ItemGroup>
+</Project>
