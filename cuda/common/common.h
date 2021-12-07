@@ -4,7 +4,7 @@
 #define _COMMON_H_
 
 #include "logMessage.h"
-#include "../include/helper_cuda.h"
+#include "helper_cuda.h"
 
 #define CheckCudaErrors(val)    cudaCheck ( (val), #val, __FILE__, __LINE__)
 
@@ -28,5 +28,6 @@ void cudaCheck(T result, char const * const func, const char * const file, int c
 
 void initRandData(short* ip, const int nSize);
 void campareResult(short* host, short* gpu, const int nSize);
+int	 calcDimSize(VolDim dim);
 
 #endif

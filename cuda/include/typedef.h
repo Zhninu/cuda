@@ -24,12 +24,17 @@ typedef enum tagLogLevel
 }LogLevel;
 
 
+typedef struct tagVolumeDimension
+{
+	short  nCol;
+	short  nRow;
+	short  nHei;
+}VolDim;
+
 typedef struct tagSDS3D
 {
-	short*	pVolumeData;
-	short	nHei;
-	short	nWid;
-	short	nNum;
+	short*	pData;
+	VolDim	nDim;
 }SDS3D;
 
 #endif // _TYPRDEF_H_

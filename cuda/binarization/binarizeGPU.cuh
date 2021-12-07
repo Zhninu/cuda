@@ -5,7 +5,7 @@ class CBinarizeGPU
 {
 public:
 	int prepare(SDS3D *pVolumeData);
-	int run(SDS3D& stBinarizeData);
+	int run(SDS3D& stBinarizedData);
 	int release();
 
 private:

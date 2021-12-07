@@ -38,3 +38,10 @@ void campareResult(short* host, short* gpu, const int nSize)
 		log_info(LOG_COMMON_MODULE, LogFormatA_A("Host and GPU result match! Data size %d\n", count).c_str());
 	}
 }
+
+int calcDimSize(VolDim dim)
+{
+	int nSize = 0;
+	nSize = dim.nCol * dim.nRow * dim.nHei;
+	return nSize;
+}

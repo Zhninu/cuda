@@ -44,9 +44,6 @@
     <ClInclude Include="include\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\helper_cuda.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\typedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>

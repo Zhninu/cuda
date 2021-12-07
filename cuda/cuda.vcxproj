@@ -28,7 +28,6 @@
     <ClInclude Include="common\common.h" />
     <ClInclude Include="common\logMessage.h" />
     <ClInclude Include="common\timer.h" />
-    <ClInclude Include="include\helper_cuda.h" />
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\typedef.h" />
   </ItemGroup>
@@ -86,7 +85,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./cuda_inc;./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -111,7 +110,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./cuda_inc;./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,8 +125,9 @@
       <Include>$(CUDA_PATH)\include;$(CUDA_PATH)\include\cuda_inc;%(Include)</Include>
       <CodeGeneration>compute_50,sm_50;compute_52,sm_52;compute_60,sm_60;compute_61,sm_61;compute_70,sm_70;compute_75,sm_75;compute_80,sm_80;compute_86,sm_86</CodeGeneration>
       <FastMath>true</FastMath>
-      <HostDebugInfo>true</HostDebugInfo>
+      <HostDebugInfo>false</HostDebugInfo>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Runtime>InheritFromHost</Runtime>
     </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
