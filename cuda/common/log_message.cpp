@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "logMessage.h"
+#include "log_message.h"
 
 CLogMsg* CLogMsg::m_pInstance = NULL;
 

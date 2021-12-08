@@ -3,18 +3,18 @@
 
 #define LOG_COMMON_MODULE	"Common"
 
-void initRandData(short* ip, const int nSize) 
+void initRandData(short* ip, const int size) 
 {
 	time_t tm;
 	srand((unsigned) time(&tm));
 
-	for (int i = 0; i < nSize; i++)
+	for (int i = 0; i < size; i++)
 	{
 		ip[i] = (short)(rand() & 0xFF) / 2;
 	}
 }
 
-void campareResult(short* host, short* gpu, const int nSize)
+void campareResult(short* host, short* gpu, const int size)
 {
 	if (!host || !gpu)
 		return;
@@ -22,7 +22,7 @@ void campareResult(short* host, short* gpu, const int nSize)
 	double epsilon = 1.0E-8;
 	bool match = true;
 	int count = 0;
-	for (count = 0; count < nSize; count++)
+	for (count = 0; count < size; count++)
 	{
 		if (fabs(host[count] - gpu[count] > epsilon))
 		{
@@ -39,9 +39,9 @@ void campareResult(short* host, short* gpu, const int nSize)
 	}
 }
 
-int calcDimSize(VolDim dim)
+int calcDimSize(vdim3 dim)
 {
 	int nSize = 0;
-	nSize = dim.nCol * dim.nRow * dim.nHei;
+	nSize = dim.col * dim.row * dim.hei;
 	return nSize;
 }

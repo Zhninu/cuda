@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "timer.h"
-#include "logMessage.h"
+#include "log_message.h"
 
 #define  LOG_TIMER_MOUDLE "Timer"
 

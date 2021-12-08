@@ -11,29 +11,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="binarization\binarizeEngine.cpp" />
+    <ClCompile Include="binarization\binarize_engine.cpp" />
     <ClCompile Include="common\common.cpp" />
-    <ClCompile Include="common\logMessage.cpp" />
+    <ClCompile Include="common\log_message.cpp" />
     <ClCompile Include="common\timer.cpp" />
-    <ClCompile Include="source\cudaMain.cpp" />
+    <ClCompile Include="source\cuda_main.cpp" />
     <ClCompile Include="source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="binarization\binarizeEngine.h" />
-    <ClInclude Include="binarization\binarizeGPU.cuh" />
-    <ClInclude Include="binarization\binarizeKernel.cuh" />
+    <ClInclude Include="binarization\binarize_engine.h" />
+    <ClInclude Include="binarization\binarize_gpu.cuh" />
+    <ClInclude Include="binarization\binarize_kernel.cuh" />
     <ClInclude Include="common\common.h" />
-    <ClInclude Include="common\logMessage.h" />
+    <ClInclude Include="common\log_message.h" />
     <ClInclude Include="common\timer.h" />
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\typedef.h" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="binarization\binarizeGPU.cu" />
-    <CudaCompile Include="binarization\binarizeKernel.cu" />
+    <CudaCompile Include="binarization\binarize_gpu.cu" />
+    <CudaCompile Include="binarization\binarize_kernel.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{01BB82A1-2917-48AC-8616-901578C2E5BF}</ProjectGuid>

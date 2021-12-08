@@ -21,16 +21,16 @@
     <ClCompile Include="common\timer.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="source\cudaMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\logMessage.cpp">
+    <ClCompile Include="source\cuda_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\log_message.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="binarization\binarizeEngine.cpp">
+    <ClCompile Include="binarization\binarize_engine.cpp">
       <Filter>Binarization</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,24 +47,24 @@
     <ClInclude Include="include\typedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\logMessage.h">
+    <ClInclude Include="common\log_message.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="binarization\binarizeEngine.h">
+    <ClInclude Include="binarization\binarize_kernel.cuh">
       <Filter>Binarization</Filter>
     </ClInclude>
-    <ClInclude Include="binarization\binarizeGPU.cuh">
+    <ClInclude Include="binarization\binarize_gpu.cuh">
       <Filter>Binarization</Filter>
     </ClInclude>
-    <ClInclude Include="binarization\binarizeKernel.cuh">
+    <ClInclude Include="binarization\binarize_engine.h">
       <Filter>Binarization</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="binarization\binarizeGPU.cu">
+    <CudaCompile Include="binarization\binarize_kernel.cu">
       <Filter>Binarization</Filter>
     </CudaCompile>
-    <CudaCompile Include="binarization\binarizeKernel.cu">
+    <CudaCompile Include="binarization\binarize_gpu.cu">
       <Filter>Binarization</Filter>
     </CudaCompile>
   </ItemGroup>

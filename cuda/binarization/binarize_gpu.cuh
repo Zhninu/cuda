@@ -4,8 +4,8 @@
 class CBinarizeGPU
 {
 public:
-	int prepare(SDS3D *pVolumeData);
-	int run(SDS3D& stBinarizedData);
+	int prepare(SDS3D* volumedata);
+	int run(binSDS3D&  binarydata);
 	int release();
 
 private:

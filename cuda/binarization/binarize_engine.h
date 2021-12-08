@@ -9,24 +9,25 @@
 class CBinarizeEngine
 {
 public:
-	CBinarizeEngine();
+	CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval);
+	CBinarizeEngine(vdim3  dim, int thresh, int maxval);
 	~CBinarizeEngine();
 
 public:
-	void setData(SDS3D* pSDS3D);
-	void setDataDim(VolDim dim);
-	int  Binarize();
+	int  binarize();
 
 private: 
-	bool createVolume();
+	void createVolume(vdim3 dim);
 	void freeVolume();
-	bool binarizeHost(SDS3D& stBinarizedVol);
-	bool binarizeDev(SDS3D& stBinarizedVol);
+	bool binarizeHost(binSDS3D& binarydata);
+	bool binarizeDev(binSDS3D& binarydata);
 
 private:
 	const char*   m_pMoudle;
 	void *		  m_pclsBinarize;
+	bool		  m_bCreateVol;
 	SDS3D*		  m_pVolumeData;
-	VolDim		  m_stVolDim;
+	int			  m_nThresh;
+	int			  m_nMaxVal;
 	CTimer		  m_stTimer;
 };
