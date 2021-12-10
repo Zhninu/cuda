@@ -12,8 +12,8 @@ int CBinarizeGPU::prepare(SDS3D* volumedata)
 	if (!volumedata)
 		return EC_ERR;
 
-	int nVolSize = Common::calcDimSize(volumedata->dim);
-	int nBytes = nVolSize * sizeof(short);
+	unsigned long nSize = Common::calcDimSize(volumedata->dim);
+	unsigned long nBytes = nSize * sizeof(short);
 
 	CheckCudaErrors(cudaMalloc((void**)&m_dpVolume, nBytes));
 	CheckCudaErrors(cudaMalloc((void**)&m_dpBinarize, nBytes));
@@ -26,8 +26,8 @@ int CBinarizeGPU::run(binSDS3D& binarydata)
 {
 	int nErr = EC_OK;
 
-	int nSize = Common::calcDimSize(binarydata.dim);
-	int nBytes = nSize * sizeof(short);
+	unsigned long nSize = Common::calcDimSize(binarydata.dim);
+	unsigned long nBytes = nSize * sizeof(short);
 
 	dim3 block(BLOCK_SIZE);
 	dim3 grid((binarydata.dim.col + BLOCK_SIZE - 1) / BLOCK_SIZE, binarydata.dim.row, binarydata.dim.hei);

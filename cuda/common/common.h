@@ -29,13 +29,17 @@ void cudaCheck(T result, char const * const func, const char * const file, int c
 class Common
 {
 public:
+	static bool mallocVolume(SDS3D* volume, vdim3 dim);
+	static bool freeVolume(SDS3D* volume);
 	static void allocArray2D(short** array2D, vdim3 dim);
 	static void freeArray2D(short** array2D, vdim3 dim);
 	static void initArray2D(short** array2D, vdim3 dim);
-	static void initRandData(short* ip, const int size);
-	static void campareResult(short* host, short* gpu, const unsigned int size);
+	static void convertArray2D(SDS1D* array1D, SDS2D* array2D, cvArray type);
+	static void initRandData(short* ip, const unsigned long size);
+	static void campareResult(short* host, short* gpu, const unsigned long size);
 	static void campareResult(short** hostArray, short** gpuArray, const vdim3 dim);
-	static int	calcDimSize(vdim3 dim);
+	static unsigned long calcDimSize(vdim3 dim);
+	static unsigned long calcDimSize(vdim2 dim);
 };
 
 #endif

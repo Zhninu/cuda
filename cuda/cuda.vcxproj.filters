@@ -68,6 +68,9 @@
     <ClInclude Include="interpolation\interpolation_engine.h">
       <Filter>Interpolation</Filter>
     </ClInclude>
+    <ClInclude Include="interpolation\interpolation_gpu.cuh">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="binarization\binarize_kernel.cu">
@@ -75,6 +78,9 @@
     </CudaCompile>
     <CudaCompile Include="binarization\binarize_gpu.cu">
       <Filter>Binarization</Filter>
+    </CudaCompile>
+    <CudaCompile Include="interpolation\interpolation_gpu.cu">
+      <Filter>Interpolation</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>

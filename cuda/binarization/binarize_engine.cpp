@@ -7,33 +7,45 @@
 
 CBinarizeEngine::CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval)
 	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
+	, m_pclsBinarize(NULL)
 	, m_pVolumeData(volumedata)
 	, m_nThresh(thresh)
 	, m_nMaxVal(maxval)
 	, m_bCreateVol(false)
 {
-	m_pclsBinarize = new CBinarizeGPU;
+	if(!m_pclsBinarize)
+		m_pclsBinarize = new CBinarizeGPU;
+
 	if (!m_pVolumeData)
 	{
 		vdim3 voldim(BINARY_VOLUME_COLUME, BINARY_VOLUME_ROW, BINARY_VOLUME_HEIGHT);
-		createVolume(voldim);
+		m_bCreateVol = Common::mallocVolume(m_pVolumeData, voldim);
 	}
 }
 
 CBinarizeEngine::CBinarizeEngine(vdim3 dim, int thresh, int maxval)
 	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
+	, m_pclsBinarize(NULL)
 	, m_pVolumeData(NULL)
 	, m_nThresh(thresh)
 	, m_nMaxVal(maxval)
 	, m_bCreateVol(false)
 {
-	createVolume(dim);
+	if (!m_pclsBinarize)
+		m_pclsBinarize = new CBinarizeGPU;
+
+	m_bCreateVol = Common::mallocVolume(m_pVolumeData, dim);
 }
 
 CBinarizeEngine::~CBinarizeEngine()
 {
-	delete(reinterpret_cast<CBinarizeGPU *>(m_pclsBinarize));
-	freeVolume();
+	if(m_pclsBinarize)
+		delete(reinterpret_cast<CBinarizeGPU *>(m_pclsBinarize));
+
+	if (m_bCreateVol) 
+	{
+		m_bCreateVol = Common::freeVolume(m_pVolumeData);
+	}
 }
 
 
@@ -47,11 +59,13 @@ int CBinarizeEngine::binarize()
 	binaryVol.maxval = m_nMaxVal;
 	binSDS3D binaryVolGPU(binaryVol);
 
-	int nSize = Common::calcDimSize(binaryVol.dim);
-	int nBytes = nSize * sizeof(short);
+	unsigned long nSize = Common::calcDimSize(binaryVol.dim);
+	unsigned long nBytes = nSize * sizeof(short);
 
 	binaryVol.data = (short*)malloc(nBytes);
 	binaryVolGPU.data = (short*)malloc(nBytes);
+
+	log_info(m_pMoudle, LogFormatA_A("Binarize starting! Volume size %d/%d/%d", m_pVolumeData->dim.col, m_pVolumeData->dim.row, m_pVolumeData->dim.hei).c_str());
 
 	//start binary
 	binarizeHost(binaryVol);
@@ -66,39 +80,6 @@ int CBinarizeEngine::binarize()
 	return nErr;
 }
 
-void CBinarizeEngine::createVolume(vdim3 dim)
-{
-	if (m_pVolumeData)
-		return;
-
-	m_pVolumeData = new SDS3D;
-	m_pVolumeData->dim = dim;
-
-	int nSize = Common::calcDimSize(m_pVolumeData->dim);
-	int nBytes = nSize * sizeof(short);
-
-	m_pVolumeData->data = (short*)malloc(nBytes);
-	Common::initRandData(m_pVolumeData->data, nSize);
-
-	m_bCreateVol = true;
-}
-
-void CBinarizeEngine::freeVolume()
-{
-	if (m_bCreateVol && m_pVolumeData) 
-	{
-		if (m_pVolumeData->data) 
-		{
-			free(m_pVolumeData->data);
-			m_pVolumeData->data = NULL;
-		}
-
-		delete m_pVolumeData;
-		m_pVolumeData = NULL;
-		m_bCreateVol = false;
-	}
-}
-
 bool CBinarizeEngine::binarizeHost(binSDS3D& binarydata)
 {
 	bool bRet = false;
@@ -111,11 +92,10 @@ bool CBinarizeEngine::binarizeHost(binSDS3D& binarydata)
 			break;
 		}
 
-		int nVolSize = Common::calcDimSize(m_pVolumeData->dim);
-		int nBinSize = Common::calcDimSize(binarydata.dim);
 		int nThresh = binarydata.thresh;
 		int nMaxVal = binarydata.maxval;
-
+		unsigned long nVolSize = Common::calcDimSize(m_pVolumeData->dim);
+		unsigned long nBinSize = Common::calcDimSize(binarydata.dim);
 		if (nVolSize != nBinSize)
 		{
 			log_error(m_pMoudle, LogFormatA_A("Volume data size is different binarize data, %d / %d!", nVolSize, nBinSize).c_str());
@@ -129,8 +109,7 @@ bool CBinarizeEngine::binarizeHost(binSDS3D& binarydata)
 			{
 				for (unsigned int x = 0; x < m_pVolumeData->dim.col; x++)
 				{
-					int nIdx = x + m_pVolumeData->dim.col * y + m_pVolumeData->dim.col * m_pVolumeData->dim.row * z;
-
+					unsigned long nIdx = x + m_pVolumeData->dim.col * y + m_pVolumeData->dim.col * m_pVolumeData->dim.row * z;
 					if (m_pVolumeData->data[nIdx] < nThresh)
 					{
 						binarydata.data[nIdx] = m_pVolumeData->data[nIdx];
@@ -163,9 +142,8 @@ bool CBinarizeEngine::binarizeDev(binSDS3D& binarydata)
 			break;
 		}
 
-		int nVolSize = Common::calcDimSize(m_pVolumeData->dim);
-		int nBinSize = Common::calcDimSize(binarydata.dim);
-
+		unsigned long nVolSize = Common::calcDimSize(m_pVolumeData->dim);
+		unsigned long nBinSize = Common::calcDimSize(binarydata.dim);
 		if (nVolSize != nBinSize)
 		{
 			log_error(m_pMoudle, LogFormatA_A("Volume data size is different binarize data, %d / %d!", nVolSize, nBinSize).c_str());

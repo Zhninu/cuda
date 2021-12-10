@@ -4,7 +4,7 @@
 
 #define  BINARY_VOLUME_COLUME		512
 #define  BINARY_VOLUME_ROW			512
-#define  BINARY_VOLUME_HEIGHT		512
+#define  BINARY_VOLUME_HEIGHT		1024
 
 class CBinarizeEngine
 {
@@ -17,8 +17,6 @@ public:
 	int  binarize();
 
 private: 
-	void createVolume(vdim3 dim);
-	void freeVolume();
 	bool binarizeHost(binSDS3D& binarydata);
 	bool binarizeDev(binSDS3D& binarydata);
 

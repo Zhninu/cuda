@@ -27,6 +27,20 @@ typedef enum tagLogLevel
 	level_error,
 }LogLevel;
 
+typedef enum tagConvertArrayType 
+{
+	cvArray_None = 0,
+	cvArray_1DTo2D,
+	cvArray_2DTo1D,
+}cvArray;
+
+struct vdim2 
+{
+	unsigned int col;
+	unsigned int row;
+	vdim2() {}
+	vdim2(unsigned int vcol, unsigned int vrow) : col(vcol), row(vrow){}
+};
 
 struct vdim3
 {
@@ -44,15 +58,33 @@ typedef struct tagSDSF3
 	float q3;
 }SDSF3;
 
+typedef struct tagSDS1D
+{
+	short*	data;
+	unsigned long size;
+}SDS1D;
+
+typedef struct tagSDS2D
+{
+	short**	data;
+	vdim2	dim;
+}SDS2D;
+
 typedef struct tagSDS3D
 {
 	short*	data;
 	vdim3	dim;
 }SDS3D;
 
-struct binSDS3D : public SDS3D
+typedef struct tagBinarySDS3D : public SDS3D
 {
 	int thresh;
 	int maxval;
-};
+}binSDS3D;
+
+typedef struct tagInterpSDS3D : public SDS3D
+{
+	SDSF3* interp;
+}interSDS3D;
+
 #endif // _TYPRDEF_H_

@@ -32,10 +32,12 @@
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\typedef.h" />
     <ClInclude Include="interpolation\interpolation_engine.h" />
+    <ClInclude Include="interpolation\interpolation_gpu.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="binarization\binarize_gpu.cu" />
     <CudaCompile Include="binarization\binarize_kernel.cu" />
+    <CudaCompile Include="interpolation\interpolation_gpu.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{01BB82A1-2917-48AC-8616-901578C2E5BF}</ProjectGuid>
