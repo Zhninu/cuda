@@ -8,9 +8,6 @@ public:
 	CTimer(timer type);
 	~CTimer();
 
-private:
-	void init();
-
 public:
 	void setTimer(timer type);
 	void startTimer(const char* str);

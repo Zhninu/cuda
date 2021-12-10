@@ -13,6 +13,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{a20ec505-ccf6-4edf-92bf-351c4884a63b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interpolation">
+      <UniqueIdentifier>{6e8853e8-3854-4ec8-b1a5-9b605b071e09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\common.cpp">
@@ -32,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="binarization\binarize_engine.cpp">
       <Filter>Binarization</Filter>
+    </ClCompile>
+    <ClCompile Include="interpolation\interpolation_engine.cpp">
+      <Filter>Interpolation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="binarization\binarize_engine.h">
       <Filter>Binarization</Filter>
+    </ClInclude>
+    <ClInclude Include="interpolation\interpolation_engine.h">
+      <Filter>Interpolation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

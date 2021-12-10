@@ -5,6 +5,10 @@
 #define EC_OK	0
 #define EC_ERR	1
 
+/* module log info*/
+#define LOG_BINARIZE_ENGINE_MODULE		"BinarizeEngine"
+#define LOG_INTERPOLATION_ENGINE_MODULE	"InterpolationEngine"
+
 typedef enum tagTimerType
 {
 	timer_none = 0,
@@ -33,11 +37,18 @@ struct vdim3
 	vdim3(unsigned int vcol, unsigned int vrow, unsigned int vhei) : col(vcol), row(vrow), hei(vhei) {}
 };
 
-struct SDS3D
+typedef struct tagSDSF3
+{
+	float q1;
+	float q2;
+	float q3;
+}SDSF3;
+
+typedef struct tagSDS3D
 {
 	short*	data;
 	vdim3	dim;
-};
+}SDS3D;
 
 struct binSDS3D : public SDS3D
 {

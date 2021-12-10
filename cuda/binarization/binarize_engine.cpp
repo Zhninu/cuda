@@ -5,10 +5,8 @@
 #include "../common/common.h"
 #include "../common/log_message.h"
 
-#define LOG_BINARIZEENGINE_MODULE	"BinarizeEngine"
-
 CBinarizeEngine::CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval)
-	: m_pMoudle(LOG_BINARIZEENGINE_MODULE)
+	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
 	, m_pVolumeData(volumedata)
 	, m_nThresh(thresh)
 	, m_nMaxVal(maxval)
@@ -17,13 +15,13 @@ CBinarizeEngine::CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval)
 	m_pclsBinarize = new CBinarizeGPU;
 	if (!m_pVolumeData)
 	{
-		vdim3 voldim(VOLUME_COLUME, VOLUME_ROW, VOLUME_HEIGHT);
+		vdim3 voldim(BINARY_VOLUME_COLUME, BINARY_VOLUME_ROW, BINARY_VOLUME_HEIGHT);
 		createVolume(voldim);
 	}
 }
 
 CBinarizeEngine::CBinarizeEngine(vdim3 dim, int thresh, int maxval)
-	: m_pMoudle(LOG_BINARIZEENGINE_MODULE)
+	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
 	, m_pVolumeData(NULL)
 	, m_nThresh(thresh)
 	, m_nMaxVal(maxval)
@@ -49,17 +47,18 @@ int CBinarizeEngine::binarize()
 	binaryVol.maxval = m_nMaxVal;
 	binSDS3D binaryVolGPU(binaryVol);
 
-	int nSize = calcDimSize(m_pVolumeData->dim);
+	int nSize = Common::calcDimSize(binaryVol.dim);
 	int nBytes = nSize * sizeof(short);
 
 	binaryVol.data = (short*)malloc(nBytes);
 	binaryVolGPU.data = (short*)malloc(nBytes);
 
-	//Start binary
+	//start binary
 	binarizeHost(binaryVol);
 	binarizeDev(binaryVolGPU);
 
-	campareResult(binaryVol.data, binaryVolGPU.data, nSize);
+	//check result
+	Common::campareResult(binaryVol.data, binaryVolGPU.data, nSize);
 
 	free(binaryVol.data);
 	free(binaryVolGPU.data);
@@ -75,11 +74,11 @@ void CBinarizeEngine::createVolume(vdim3 dim)
 	m_pVolumeData = new SDS3D;
 	m_pVolumeData->dim = dim;
 
-	int nSize = calcDimSize(m_pVolumeData->dim);
+	int nSize = Common::calcDimSize(m_pVolumeData->dim);
 	int nBytes = nSize * sizeof(short);
 
 	m_pVolumeData->data = (short*)malloc(nBytes);
-	initRandData(m_pVolumeData->data, nSize);
+	Common::initRandData(m_pVolumeData->data, nSize);
 
 	m_bCreateVol = true;
 }
@@ -94,7 +93,7 @@ void CBinarizeEngine::freeVolume()
 			m_pVolumeData->data = NULL;
 		}
 
-		free(m_pVolumeData);
+		delete m_pVolumeData;
 		m_pVolumeData = NULL;
 		m_bCreateVol = false;
 	}
@@ -112,8 +111,8 @@ bool CBinarizeEngine::binarizeHost(binSDS3D& binarydata)
 			break;
 		}
 
-		int nVolSize = calcDimSize(m_pVolumeData->dim);
-		int nBinSize = calcDimSize(binarydata.dim);
+		int nVolSize = Common::calcDimSize(m_pVolumeData->dim);
+		int nBinSize = Common::calcDimSize(binarydata.dim);
 		int nThresh = binarydata.thresh;
 		int nMaxVal = binarydata.maxval;
 
@@ -164,8 +163,8 @@ bool CBinarizeEngine::binarizeDev(binSDS3D& binarydata)
 			break;
 		}
 
-		int nVolSize = calcDimSize(m_pVolumeData->dim);
-		int nBinSize = calcDimSize(binarydata.dim);
+		int nVolSize = Common::calcDimSize(m_pVolumeData->dim);
+		int nBinSize = Common::calcDimSize(binarydata.dim);
 
 		if (nVolSize != nBinSize)
 		{

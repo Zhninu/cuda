@@ -26,8 +26,16 @@ void cudaCheck(T result, char const * const func, const char * const file, int c
 	}
 }
 
-void initRandData(short* ip, const int size);
-void campareResult(short* host, short* gpu, const int size);
-int	 calcDimSize(vdim3 dim);
+class Common
+{
+public:
+	static void allocArray2D(short** array2D, vdim3 dim);
+	static void freeArray2D(short** array2D, vdim3 dim);
+	static void initArray2D(short** array2D, vdim3 dim);
+	static void initRandData(short* ip, const int size);
+	static void campareResult(short* host, short* gpu, const unsigned int size);
+	static void campareResult(short** hostArray, short** gpuArray, const vdim3 dim);
+	static int	calcDimSize(vdim3 dim);
+};
 
 #endif

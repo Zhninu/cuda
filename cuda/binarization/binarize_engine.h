@@ -2,9 +2,9 @@
 #include "typedef.h"
 #include "../common/timer.h"
 
-#define  VOLUME_COLUME		512
-#define  VOLUME_ROW			512
-#define  VOLUME_HEIGHT		512
+#define  BINARY_VOLUME_COLUME		512
+#define  BINARY_VOLUME_ROW			512
+#define  BINARY_VOLUME_HEIGHT		512
 
 class CBinarizeEngine
 {

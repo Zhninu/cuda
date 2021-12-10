@@ -5,29 +5,30 @@
 
 #define  LOG_TIMER_MOUDLE "Timer"
 
-CTimer::CTimer() : m_timer(timer_QPCounter)
+CTimer::CTimer() 
+	: m_pMoudle(LOG_TIMER_MOUDLE)
+	, m_timer(timer_QPCounter)
+	, m_recTime(0)
+	, m_recClock(0)
+	, m_recApiTime(0)
+	,m_recTickCount(0)
 {
-	init();
+	memset(&m_recQPCounter, 0, sizeof(LARGE_INTEGER));
 }
 
 CTimer::CTimer(timer type)
+	: m_pMoudle(LOG_TIMER_MOUDLE)
+	, m_recTime(0)
+	, m_recClock(0)
+	, m_recApiTime(0)
+	, m_recTickCount(0)
 {
 	m_timer = type;
-	init();
+	memset(&m_recQPCounter, 0, sizeof(LARGE_INTEGER));
 }
 
 CTimer::~CTimer()
 {
-}
-
-void CTimer::init()
-{
-	m_pMoudle = LOG_TIMER_MOUDLE;
-	m_recTime = 0;
-	m_recClock = 0;
-	m_recApiTime = 0;
-	memset(&m_recQPCounter, 0, sizeof(LARGE_INTEGER));
-	m_recTickCount = 0;
 }
 
 void CTimer::setTimer(timer type) 
