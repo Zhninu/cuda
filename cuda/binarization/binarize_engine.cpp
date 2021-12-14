@@ -20,6 +20,10 @@ CBinarizeEngine::CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval)
 	{
 		vdim3 voldim(BINARY_VOLUME_COLUME, BINARY_VOLUME_ROW, BINARY_VOLUME_HEIGHT);
 		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, voldim);
+		if (m_bCreateVol) 
+		{
+			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
+		}
 	}
 }
 
@@ -34,8 +38,14 @@ CBinarizeEngine::CBinarizeEngine(vdim3 dim, int thresh, int maxval)
 	if (!m_pclsBinarize)
 		m_pclsBinarize = new CBinarizeGPU;
 
-	if (!m_pVolumeData)
+	if (!m_pVolumeData) 
+	{
 		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, dim);
+		if (m_bCreateVol)
+		{
+			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
+		}
+	}
 }
 
 CBinarizeEngine::~CBinarizeEngine()

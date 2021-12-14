@@ -10,23 +10,27 @@
 
 #define  CTV_OFFSET 1024
 
-CInterpEngine::CInterpEngine(SDS3D* volumedata) 
+CInterpEngine::CInterpEngine(SDS3D* vol)
 	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
 	, m_pclsInterp(NULL)
-	, m_pVolumeData(volumedata)
+	, m_pVolumeData(vol)
 	, m_bCreateVol(false)
 {
 	if(!m_pclsInterp)
 		m_pclsInterp = new CInterpolationGPU;
 
-	if (!volumedata) 
+	if (!vol)
 	{
 		vdim3 voldim(INTERP_VOLUME_COLUME, INTERP_VOLUME_ROW, INTERP_VOLUME_HEIGHT);
 		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, voldim);
+		if (m_bCreateVol)
+		{
+			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
+		}
 	}
 }
 
-CInterpEngine::CInterpEngine(vdim3  dim) 
+CInterpEngine::CInterpEngine(vdim3  dim)
 	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
 	, m_pclsInterp(NULL)
 	, m_pVolumeData(NULL)
@@ -35,7 +39,14 @@ CInterpEngine::CInterpEngine(vdim3  dim)
 	if (!m_pclsInterp)
 		m_pclsInterp = new CInterpolationGPU;
 
-	m_bCreateVol = Common::mallocVolume(&m_pVolumeData, dim);
+	if (!m_pVolumeData) 
+	{
+		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, dim);
+		if (m_bCreateVol)
+		{
+			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
+		}
+	}
 }
 
 CInterpEngine:: ~CInterpEngine()
@@ -47,12 +58,28 @@ CInterpEngine:: ~CInterpEngine()
 		m_bCreateVol = Common::freeVolume(&m_pVolumeData);
 }
 
-int CInterpEngine::interp() 
+int CInterpEngine::interp(int argc, char **argv)
 {
+	ipSDS3D h_Inter, d_Inter;
+	float ratio = 0.8f;
+	constructInterp(h_Inter, ratio);
+	constructInterp(d_Inter, ratio);
 
+	unsigned long nSize = Common::calcDim(h_Inter.dim);
+	//interpolation
+	interpHost(h_Inter);
+	interpDev(d_Inter);
+
+	//check result
+	Common::campareResult(h_Inter.data, d_Inter.data, nSize);
+
+	freeInterp(h_Inter);
+	freeInterp(d_Inter);
+
+	return true;
 }
 
-bool CInterpEngine::interpHost(interSDS3D& interpdata)
+bool CInterpEngine::interpHost(ipSDS3D& ipdata)
 {
 	//convert array to 2D
 	vdim3  dimVol = m_pVolumeData->dim;
@@ -60,12 +87,13 @@ bool CInterpEngine::interpHost(interSDS3D& interpdata)
 	array1D.data = m_pVolumeData->data;
 	array1D.size = Common::calcDim(dimVol);
 	SDS2D  array2D;
-	Common::allocArray2D(array2D.data, dimVol);
+	Common::allocArray2D(&array2D.data, dimVol);
 	array2D.dim.col = dimVol.col * dimVol.row;
 	array2D.dim.row = dimVol.hei;
 	Common::convertArray2D(&array1D, &array2D, cvArray_1DTo2D);
+	//convert array to 2D
 
-	unsigned long nInterpSize = Common::calcDim(interpdata.dim);
+	unsigned long nInterpSize = Common::calcDim(ipdata.dim);
 	short** pVolumeData = array2D.data;
 	int nSliceWid = dimVol.col;
 	int nSliceHei = dimVol.row;
@@ -73,7 +101,7 @@ bool CInterpEngine::interpHost(interSDS3D& interpdata)
 
 	for (unsigned long count = 0; count < nInterpSize; count++)
 	{
-		SDSF3 ptInterp = interpdata.interp[count];
+		SDSF3 ptInterp = ipdata.interp[count];
 		short nVal = -CTV_OFFSET;
 		int nx = (int)ptInterp.q1;
 		int ny = (int)ptInterp.q2;
@@ -106,12 +134,48 @@ bool CInterpEngine::interpHost(interSDS3D& interpdata)
 		nVal = nVal > -CTV_OFFSET ? nVal : -CTV_OFFSET;
 		nVal = nVal < 3072 ? nVal : 3071;
 
-		interpdata.data[count] = nVal;
+		ipdata.data[count] = nVal;
+	}
+
+	Common::freeArray2D(&array2D.data, dimVol);
+
+	return true;
+}
+
+bool CInterpEngine::interpDev(ipSDS3D& ipdata)
+{
+	return true;
+}
+
+void CInterpEngine::constructInterp(ipSDS3D& ipdata, float ratio)
+{
+	ipdata.dim = m_pVolumeData->dim;
+	unsigned long nSize = Common::calcDim(ipdata.dim);
+	ipdata.data = (short*)malloc(nSize * sizeof(short));
+	ipdata.interp = (SDSF3*)malloc(nSize * sizeof(SDSF3));
+	memset(ipdata.data, 0, nSize * sizeof(short));
+	memset(ipdata.interp, 0, nSize * sizeof(SDSF3));
+
+	for (unsigned long hei = 0; hei < ipdata.dim.hei; hei++)
+	{
+		for (unsigned long row = 0; row < ipdata.dim.row; row++)
+		{
+			for (unsigned long col = 0; col < ipdata.dim.col; col++)
+			{
+				unsigned long unIdx = col + row * ipdata.dim.col + hei * ipdata.dim.col * ipdata.dim.row;
+				ipdata.interp[unIdx].q1 = col + ratio;
+				ipdata.interp[unIdx].q2 = row + ratio;
+				ipdata.interp[unIdx].q3 = hei + ratio;
+			}
+		}
 	}
 }
 
-bool CInterpEngine::interpDev(interSDS3D& interpdata)
+void CInterpEngine::freeInterp(ipSDS3D& ipdata)
 {
+	if(ipdata.data)
+		free(ipdata.data);
 
-
+	if (ipdata.interp)
+		free(ipdata.interp);
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "typedef.h"
 #include "../binarization/binarize_engine.h"
+#include "../interpolation/interpolation_engine.h"
 #include "../demo/cuda_verify.cuh"
 #include "../common/common.h"
 
@@ -19,6 +20,14 @@ int main(int argc, char **argv)
 	{
 		CBinarizeEngine* pEngine = new CBinarizeEngine(NULL, 1, 255);
 		pEngine->binarize(argc, argv);
+	}
+
+	//Interpolation
+	if (nMType == Module_Interpolation
+		|| nMType == Module_All)
+	{
+		CInterpEngine* pEngine = new CInterpEngine(NULL);
+		pEngine->interp(argc, argv);
 	}
 
 	//Cuda verify

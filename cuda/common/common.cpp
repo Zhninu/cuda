@@ -18,6 +18,12 @@ Module Common::findModeType(char* str)
 			break;
 		}
 
+		if (stricmp(str, "interp") == 0)
+		{
+			nMType = Module_Interpolation;
+			break;
+		}
+
 		if (stricmp(str, "cudaverify") == 0)
 		{
 			nMType = Module_CudaVerify;
@@ -41,7 +47,7 @@ bool Common::mallocVolume(SDS3D** vol, vdim3 dim)
 	unsigned long nSize = Common::calcDim((*vol)->dim);
 	unsigned long nBytes = nSize * sizeof(short);
 	(*vol)->data = (short*)malloc(nBytes);
-	Common::initRandData((*vol)->data, nSize);
+	memset((*vol)->data, 0, nBytes);
 	bMalloc = true;
 
 	return bMalloc;
@@ -67,31 +73,31 @@ bool Common::freeVolume(SDS3D** vol)
 	return bFree;
 }
 
-void Common::allocArray2D(short** array2D, vdim3 dim)
+void Common::allocArray2D(short*** array2D, vdim3 dim)
 {
 	unsigned int height = dim.hei;
 	unsigned int width = dim.col * dim.row;
 
-	array2D = new short* [dim.hei];
+	*array2D = new short* [dim.hei];
 	for (unsigned int i = 0; i < height; i++)
 	{
-		array2D[i] = new short [width];
+		(*array2D)[i] = new short [width];
 	}
 }
 
-void Common::freeArray2D(short** array2D, vdim3 dim)
+void Common::freeArray2D(short*** array2D, vdim3 dim)
 {
 	unsigned int height = dim.hei;
 	unsigned int width = dim.col * dim.row;
 
 	for (unsigned int i = 0; i < height; i++)
 	{
-		delete array2D[i];
+		delete (*array2D)[i];
 	}
-	delete []array2D;
+	delete [] (*array2D);
 }
 
-void Common::initArray2D(short** array2D, vdim3 dim)
+void Common::initArray2D(short*** array2D, vdim3 dim)
 {
 	time_t tm;
 	srand((unsigned)time(&tm));
@@ -103,7 +109,7 @@ void Common::initArray2D(short** array2D, vdim3 dim)
 	{
 		for (unsigned int j = 0; j < width; j++) 
 		{
-			array2D[i][j] = (short)(rand() & 0xFF) / 2;
+			(*array2D)[i][j] = (short)(rand() & 0xFF) / 2;
 		}
 	}
 }

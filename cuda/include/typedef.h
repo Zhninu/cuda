@@ -14,6 +14,7 @@ typedef enum tagModule
 {
 	Module_All = 0,
 	Module_Binary,
+	Module_Interpolation,
 	Module_CudaVerify
 }Module;
 
@@ -93,6 +94,6 @@ typedef struct tagBinarySDS3D : public SDS3D
 typedef struct tagInterpSDS3D : public SDS3D
 {
 	SDSF3* interp;
-}interSDS3D;
+}ipSDS3D;
 
 #endif // _TYPRDEF_H_

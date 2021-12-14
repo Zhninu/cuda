@@ -32,9 +32,9 @@ public:
 	static Module findModeType(char* str);
 	static bool	mallocVolume(SDS3D** vol, vdim3 dim);
 	static bool freeVolume(SDS3D** vol);
-	static void allocArray2D(short** array2D, vdim3 dim);
-	static void freeArray2D(short** array2D, vdim3 dim);
-	static void initArray2D(short** array2D, vdim3 dim);
+	static void allocArray2D(short*** array2D, vdim3 dim);
+	static void freeArray2D(short*** array2D, vdim3 dim);
+	static void initArray2D(short*** array2D, vdim3 dim);
 	static void convertArray2D(SDS1D* array1D, SDS2D* array2D, cvArray type);
 	static void initRandData(short* ip, const unsigned long size);
 	static void campareResult(short* host, short* gpu, const unsigned long size);
