@@ -22,7 +22,7 @@ CInterpEngine::CInterpEngine(SDS3D* volumedata)
 	if (!volumedata) 
 	{
 		vdim3 voldim(INTERP_VOLUME_COLUME, INTERP_VOLUME_ROW, INTERP_VOLUME_HEIGHT);
-		m_bCreateVol = Common::mallocVolume(m_pVolumeData, voldim);
+		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, voldim);
 	}
 }
 
@@ -35,7 +35,7 @@ CInterpEngine::CInterpEngine(vdim3  dim)
 	if (!m_pclsInterp)
 		m_pclsInterp = new CInterpolationGPU;
 
-	m_bCreateVol = Common::mallocVolume(m_pVolumeData, dim);
+	m_bCreateVol = Common::mallocVolume(&m_pVolumeData, dim);
 }
 
 CInterpEngine:: ~CInterpEngine()
@@ -44,7 +44,7 @@ CInterpEngine:: ~CInterpEngine()
 		delete(reinterpret_cast<CInterpolationGPU *>(m_pclsInterp));
 
 	if (m_bCreateVol)
-		m_bCreateVol = Common::freeVolume(m_pVolumeData);
+		m_bCreateVol = Common::freeVolume(&m_pVolumeData);
 }
 
 int CInterpEngine::interp() 
@@ -58,14 +58,14 @@ bool CInterpEngine::interpHost(interSDS3D& interpdata)
 	vdim3  dimVol = m_pVolumeData->dim;
 	SDS1D  array1D;
 	array1D.data = m_pVolumeData->data;
-	array1D.size = Common::calcDimSize(dimVol);
+	array1D.size = Common::calcDim(dimVol);
 	SDS2D  array2D;
 	Common::allocArray2D(array2D.data, dimVol);
 	array2D.dim.col = dimVol.col * dimVol.row;
 	array2D.dim.row = dimVol.hei;
 	Common::convertArray2D(&array1D, &array2D, cvArray_1DTo2D);
 
-	unsigned long nInterpSize = Common::calcDimSize(interpdata.dim);
+	unsigned long nInterpSize = Common::calcDim(interpdata.dim);
 	short** pVolumeData = array2D.data;
 	int nSliceWid = dimVol.col;
 	int nSliceHei = dimVol.row;

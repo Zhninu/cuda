@@ -12,12 +12,12 @@ int CBinarizeGPU::prepare(SDS3D* volumedata)
 	if (!volumedata)
 		return EC_ERR;
 
-	unsigned long nSize = Common::calcDimSize(volumedata->dim);
+	unsigned long nSize = Common::calcDim(volumedata->dim);
 	unsigned long nBytes = nSize * sizeof(short);
 
 	CheckCudaErrors(cudaMalloc((void**)&m_dpVolume, nBytes));
 	CheckCudaErrors(cudaMalloc((void**)&m_dpBinarize, nBytes));
-	CheckCudaErrors(cudaMemcpyAsync(m_dpVolume, volumedata->data, nBytes, cudaMemcpyHostToDevice));
+	CheckCudaErrors(cudaMemcpy(m_dpVolume, volumedata->data, nBytes, cudaMemcpyHostToDevice));
 
 	return nErr;
 }
@@ -26,13 +26,13 @@ int CBinarizeGPU::run(binSDS3D& binarydata)
 {
 	int nErr = EC_OK;
 
-	unsigned long nSize = Common::calcDimSize(binarydata.dim);
+	unsigned long nSize = Common::calcDim(binarydata.dim);
 	unsigned long nBytes = nSize * sizeof(short);
 
 	dim3 block(BLOCK_SIZE);
 	dim3 grid((binarydata.dim.col + BLOCK_SIZE - 1) / BLOCK_SIZE, binarydata.dim.row, binarydata.dim.hei);
 	binarizeKernel << <grid, block >> >(m_dpVolume, m_dpBinarize, nSize, binarydata.thresh, binarydata.maxval);
-	CheckCudaErrors(cudaMemcpyAsync(binarydata.data, m_dpBinarize, nBytes, cudaMemcpyDeviceToHost));
+	CheckCudaErrors(cudaMemcpy(binarydata.data, m_dpBinarize, nBytes, cudaMemcpyDeviceToHost));
 	CheckCudaErrors(cudaStreamSynchronize(cudaStreamPerThread));
 
 	return nErr;

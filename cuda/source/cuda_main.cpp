@@ -10,6 +10,5 @@ int main()
 	//binary
 	CBinarizeEngine* pEngine = new CBinarizeEngine(NULL, 1, 255);
 	pEngine->binarize();
-
 	return nErr;
 }

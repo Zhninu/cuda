@@ -3,40 +3,39 @@
 
 #define LOG_COMMON_MODULE	"Common"
 
-bool Common::mallocVolume(SDS3D* volume, vdim3 dim)
+bool Common::mallocVolume(SDS3D** vol, vdim3 dim)
 {
 	bool bMalloc = false;
-	if (volume)
+	if (!vol || *vol)
 		return bMalloc;
 
-	volume = new SDS3D;
-	volume->dim = dim;
+	(*vol) = new SDS3D;
+	(*vol)->dim = dim;
 
-	unsigned long nSize = Common::calcDimSize(volume->dim);
+	unsigned long nSize = Common::calcDim((*vol)->dim);
 	unsigned long nBytes = nSize * sizeof(short);
-
-	volume->data = (short*)malloc(nBytes);
-	Common::initRandData(volume->data, nSize);
+	(*vol)->data = (short*)malloc(nBytes);
+	Common::initRandData((*vol)->data, nSize);
 	bMalloc = true;
 
 	return bMalloc;
 }
 
-bool Common::freeVolume(SDS3D* volume)
+bool Common::freeVolume(SDS3D** vol)
 {	
 	bool bFree = false;
 
-	if (volume)
+	if (!vol || !(*vol))
 		return bFree;
 
-	if (volume->data)
+	if ((*vol)->data)
 	{
-		free(volume->data);
-		volume->data = NULL;
+		free((*vol)->data);
+		(*vol)->data = NULL;
 	}
 
-	delete volume;
-	volume = NULL;
+	delete (*vol);
+	(*vol) = NULL;
 	bFree = true;
 
 	return bFree;
@@ -88,7 +87,7 @@ void Common::convertArray2D(SDS1D* array1D, SDS2D* array2D, cvArray type)
 	if (!array1D || !array2D)
 		return;
 
-	if (array1D->size != calcDimSize(array2D->dim))
+	if (array1D->size != calcDim(array2D->dim))
 		return;
 
 	if (type != cvArray_1DTo2D || type != cvArray_2DTo1D)
@@ -182,14 +181,14 @@ void Common::campareResult(short** hostArray, short** gpuArray, const vdim3 dim)
 	}
 }
 
-unsigned long Common::calcDimSize(vdim3 dim)
+unsigned long Common::calcDim(vdim3 dim)
 {
 	unsigned long nSize = 0;
 	nSize = (unsigned long)dim.col * dim.row * dim.hei;
 	return nSize;
 }
 
-unsigned long Common::calcDimSize(vdim2 dim)
+unsigned long Common::calcDim(vdim2 dim)
 {
 	unsigned long nSize = 0;
 	nSize = (unsigned long)dim.col * dim.row;

@@ -19,7 +19,7 @@ CBinarizeEngine::CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval)
 	if (!m_pVolumeData)
 	{
 		vdim3 voldim(BINARY_VOLUME_COLUME, BINARY_VOLUME_ROW, BINARY_VOLUME_HEIGHT);
-		m_bCreateVol = Common::mallocVolume(m_pVolumeData, voldim);
+		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, voldim);
 	}
 }
 
@@ -34,7 +34,8 @@ CBinarizeEngine::CBinarizeEngine(vdim3 dim, int thresh, int maxval)
 	if (!m_pclsBinarize)
 		m_pclsBinarize = new CBinarizeGPU;
 
-	m_bCreateVol = Common::mallocVolume(m_pVolumeData, dim);
+	if (!m_pVolumeData)
+		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, dim);
 }
 
 CBinarizeEngine::~CBinarizeEngine()
@@ -44,7 +45,7 @@ CBinarizeEngine::~CBinarizeEngine()
 
 	if (m_bCreateVol) 
 	{
-		m_bCreateVol = Common::freeVolume(m_pVolumeData);
+		m_bCreateVol = Common::freeVolume(&m_pVolumeData);
 	}
 }
 
@@ -57,15 +58,16 @@ int CBinarizeEngine::binarize()
 	binaryVol.dim = m_pVolumeData->dim;
 	binaryVol.thresh = m_nThresh;
 	binaryVol.maxval = m_nMaxVal;
+
 	binSDS3D binaryVolGPU(binaryVol);
 
-	unsigned long nSize = Common::calcDimSize(binaryVol.dim);
+	unsigned long nSize = Common::calcDim(binaryVol.dim);
 	unsigned long nBytes = nSize * sizeof(short);
-
 	binaryVol.data = (short*)malloc(nBytes);
 	binaryVolGPU.data = (short*)malloc(nBytes);
 
-	log_info(m_pMoudle, LogFormatA_A("Binarize starting! Volume size %d/%d/%d", m_pVolumeData->dim.col, m_pVolumeData->dim.row, m_pVolumeData->dim.hei).c_str());
+	log_info(m_pMoudle, LogFormatA_A("Binarize starting! Volume dimension %d/%d/%d", 
+										m_pVolumeData->dim.col, m_pVolumeData->dim.row, m_pVolumeData->dim.hei).c_str());
 
 	//start binary
 	binarizeHost(binaryVol);
@@ -94,8 +96,8 @@ bool CBinarizeEngine::binarizeHost(binSDS3D& binarydata)
 
 		int nThresh = binarydata.thresh;
 		int nMaxVal = binarydata.maxval;
-		unsigned long nVolSize = Common::calcDimSize(m_pVolumeData->dim);
-		unsigned long nBinSize = Common::calcDimSize(binarydata.dim);
+		unsigned long nVolSize = Common::calcDim(m_pVolumeData->dim);
+		unsigned long nBinSize = Common::calcDim(binarydata.dim);
 		if (nVolSize != nBinSize)
 		{
 			log_error(m_pMoudle, LogFormatA_A("Volume data size is different binarize data, %d / %d!", nVolSize, nBinSize).c_str());
@@ -142,8 +144,8 @@ bool CBinarizeEngine::binarizeDev(binSDS3D& binarydata)
 			break;
 		}
 
-		unsigned long nVolSize = Common::calcDimSize(m_pVolumeData->dim);
-		unsigned long nBinSize = Common::calcDimSize(binarydata.dim);
+		unsigned long nVolSize = Common::calcDim(m_pVolumeData->dim);
+		unsigned long nBinSize = Common::calcDim(binarydata.dim);
 		if (nVolSize != nBinSize)
 		{
 			log_error(m_pMoudle, LogFormatA_A("Volume data size is different binarize data, %d / %d!", nVolSize, nBinSize).c_str());
