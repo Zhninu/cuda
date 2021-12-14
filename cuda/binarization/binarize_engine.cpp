@@ -50,7 +50,7 @@ CBinarizeEngine::~CBinarizeEngine()
 }
 
 
-int CBinarizeEngine::binarize()
+int CBinarizeEngine::binarize(int argc, char **argv)
 {
 	int	  nErr = EC_OK;
 

@@ -29,6 +29,8 @@
     <ClInclude Include="common\common.h" />
     <ClInclude Include="common\log_message.h" />
     <ClInclude Include="common\timer.h" />
+    <ClInclude Include="demo\cuda_keneral.cuh" />
+    <ClInclude Include="demo\cuda_verify.cuh" />
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\typedef.h" />
     <ClInclude Include="interpolation\interpolation_engine.h" />
@@ -37,7 +39,12 @@
   <ItemGroup>
     <CudaCompile Include="binarization\binarize_gpu.cu" />
     <CudaCompile Include="binarization\binarize_kernel.cu" />
+    <CudaCompile Include="demo\cuda_keneral.cu" />
+    <CudaCompile Include="demo\cuda_verify.cu" />
     <CudaCompile Include="interpolation\interpolation_gpu.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="demo\Readme.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{01BB82A1-2917-48AC-8616-901578C2E5BF}</ProjectGuid>

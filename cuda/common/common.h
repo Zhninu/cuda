@@ -29,7 +29,8 @@ void cudaCheck(T result, char const * const func, const char * const file, int c
 class Common
 {
 public:
-	static bool mallocVolume(SDS3D** vol, vdim3 dim);
+	static Module findModeType(char* str);
+	static bool	mallocVolume(SDS3D** vol, vdim3 dim);
 	static bool freeVolume(SDS3D** vol);
 	static void allocArray2D(short** array2D, vdim3 dim);
 	static void freeArray2D(short** array2D, vdim3 dim);
@@ -38,6 +39,7 @@ public:
 	static void initRandData(short* ip, const unsigned long size);
 	static void campareResult(short* host, short* gpu, const unsigned long size);
 	static void campareResult(short** hostArray, short** gpuArray, const vdim3 dim);
+	static bool campareResult(int *data, const int n, const int x);
 	static unsigned long calcDim(vdim3 dim);
 	static unsigned long calcDim(vdim2 dim);
 };

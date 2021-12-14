@@ -14,7 +14,7 @@ public:
 	~CBinarizeEngine();
 
 public:
-	int  binarize();
+	int  binarize(int argc, char **argv);
 
 private: 
 	bool binarizeHost(binSDS3D& binarydata);

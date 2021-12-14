@@ -3,6 +3,32 @@
 
 #define LOG_COMMON_MODULE	"Common"
 
+Module Common::findModeType(char* str) 
+{
+	Module nMType = Module_All;
+
+	do 
+	{
+		if (!str)
+			break;
+
+		if (stricmp(str, "binary") == 0) 
+		{
+			nMType = Module_Binary;
+			break;
+		}
+
+		if (stricmp(str, "cudaverify") == 0)
+		{
+			nMType = Module_CudaVerify;
+			break;
+		}
+
+	} while (0);
+
+	return nMType;
+}
+
 bool Common::mallocVolume(SDS3D** vol, vdim3 dim)
 {
 	bool bMalloc = false;
@@ -179,6 +205,21 @@ void Common::campareResult(short** hostArray, short** gpuArray, const vdim3 dim)
 	{
 		log_info(LOG_COMMON_MODULE, LogFormatA_A("Host and GPU result match! Data size %d", height * width).c_str());
 	}
+}
+
+bool Common::campareResult(int *data, const int n, const int x)
+{
+	if (!data)
+		return false;
+
+	for (int i = 0; i < n; i++)
+		if (data[i] != x)
+		{
+			log_info(LOG_COMMON_MODULE, LogFormatA_A("Error! data[%d] = %d, ref = %d\n", i, data[i], x).c_str());
+			return false;
+		}
+
+	return true;
 }
 
 unsigned long Common::calcDim(vdim3 dim)

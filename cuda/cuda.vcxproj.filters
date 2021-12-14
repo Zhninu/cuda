@@ -16,6 +16,9 @@
     <Filter Include="Interpolation">
       <UniqueIdentifier>{6e8853e8-3854-4ec8-b1a5-9b605b071e09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Demo">
+      <UniqueIdentifier>{4b22dc51-5498-47fd-abc6-9c36bd614653}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\common.cpp">
@@ -71,6 +74,12 @@
     <ClInclude Include="interpolation\interpolation_gpu.cuh">
       <Filter>Interpolation</Filter>
     </ClInclude>
+    <ClInclude Include="demo\cuda_verify.cuh">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="demo\cuda_keneral.cuh">
+      <Filter>Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="binarization\binarize_kernel.cu">
@@ -82,5 +91,16 @@
     <CudaCompile Include="interpolation\interpolation_gpu.cu">
       <Filter>Interpolation</Filter>
     </CudaCompile>
+    <CudaCompile Include="demo\cuda_verify.cu">
+      <Filter>Demo</Filter>
+    </CudaCompile>
+    <CudaCompile Include="demo\cuda_keneral.cu">
+      <Filter>Demo</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="demo\Readme.txt">
+      <Filter>Demo</Filter>
+    </Text>
   </ItemGroup>
 </Project>

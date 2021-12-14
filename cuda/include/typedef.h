@@ -6,8 +6,16 @@
 #define EC_ERR	1
 
 /* module log info*/
-#define LOG_BINARIZE_ENGINE_MODULE		"BinarizeEngine"
-#define LOG_INTERPOLATION_ENGINE_MODULE	"InterpolationEngine"
+#define LOG_BINARIZE_ENGINE_MODULE			"BinarizeEngine"
+#define LOG_INTERPOLATION_ENGINE_MODULE		"InterpolationEngine"
+#define LOG_CUDA_VERIFY_MODULE				"CudaVerify"
+
+typedef enum tagModule 
+{
+	Module_All = 0,
+	Module_Binary,
+	Module_CudaVerify
+}Module;
 
 typedef enum tagTimerType
 {
