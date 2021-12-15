@@ -3,7 +3,7 @@
 
 #define LOG_COMMON_MODULE	"Common"
 
-Module Common::findModeType(char* str) 
+Module Common::findMode(char* str) 
 {
 	Module nMType = Module_All;
 
@@ -35,87 +35,11 @@ Module Common::findModeType(char* str)
 	return nMType;
 }
 
-bool Common::mallocVolume(SDS3D** vol, vdim3 dim)
+void Common::convertArray(SDS1D* a1d, SDS2D* a2d, cvArray type)
 {
-	bool bMalloc = false;
-	if (!vol || *vol)
-		return bMalloc;
+	SDS1D* array1D = a1d;
+	SDS2D* array2D = a2d;
 
-	(*vol) = new SDS3D;
-	(*vol)->dim = dim;
-
-	unsigned long nSize = Common::calcDim((*vol)->dim);
-	unsigned long nBytes = nSize * sizeof(short);
-	(*vol)->data = (short*)malloc(nBytes);
-	memset((*vol)->data, 0, nBytes);
-	bMalloc = true;
-
-	return bMalloc;
-}
-
-bool Common::freeVolume(SDS3D** vol)
-{	
-	bool bFree = false;
-
-	if (!vol || !(*vol))
-		return bFree;
-
-	if ((*vol)->data)
-	{
-		free((*vol)->data);
-		(*vol)->data = NULL;
-	}
-
-	delete (*vol);
-	(*vol) = NULL;
-	bFree = true;
-
-	return bFree;
-}
-
-void Common::allocArray2D(short*** array2D, vdim3 dim)
-{
-	unsigned int height = dim.hei;
-	unsigned int width = dim.col * dim.row;
-
-	*array2D = new short* [dim.hei];
-	for (unsigned int i = 0; i < height; i++)
-	{
-		(*array2D)[i] = new short [width];
-	}
-}
-
-void Common::freeArray2D(short*** array2D, vdim3 dim)
-{
-	unsigned int height = dim.hei;
-	unsigned int width = dim.col * dim.row;
-
-	for (unsigned int i = 0; i < height; i++)
-	{
-		delete (*array2D)[i];
-	}
-	delete [] (*array2D);
-}
-
-void Common::initArray2D(short*** array2D, vdim3 dim)
-{
-	time_t tm;
-	srand((unsigned)time(&tm));
-
-	unsigned int height = dim.hei;
-	unsigned int width = dim.col * dim.row;
-
-	for (unsigned int i = 0; i < height; i++)
-	{
-		for (unsigned int j = 0; j < width; j++) 
-		{
-			(*array2D)[i][j] = (short)(rand() & 0xFF) / 2;
-		}
-	}
-}
-
-void Common::convertArray2D(SDS1D* array1D, SDS2D* array2D, cvArray type)
-{
 	if (!array1D || !array2D)
 		return;
 
@@ -146,16 +70,6 @@ void Common::convertArray2D(SDS1D* array1D, SDS2D* array2D, cvArray type)
 	}
 }
 
-void Common::initRandData(short* ip, const unsigned long size)
-{
-	time_t tm;
-	srand((unsigned) time(&tm));
-
-	for (unsigned long i = 0; i < size; i++)
-	{
-		ip[i] = (short)(rand() & 0xFF) / 2;
-	}
-}
 
 void Common::campareResult(short* host, short* gpu, const unsigned long size)
 {
@@ -213,15 +127,15 @@ void Common::campareResult(short** hostArray, short** gpuArray, const vdim3 dim)
 	}
 }
 
-bool Common::campareResult(int *data, const int n, const int x)
+bool Common::campareResult(int *ptr, const int n, const int x)
 {
-	if (!data)
+	if (!ptr)
 		return false;
 
 	for (int i = 0; i < n; i++)
-		if (data[i] != x)
+		if (ptr[i] != x)
 		{
-			log_info(LOG_COMMON_MODULE, LogFormatA_A("Error! data[%d] = %d, ref = %d\n", i, data[i], x).c_str());
+			log_info(LOG_COMMON_MODULE, LogFormatA_A("Error! data[%d] = %d, ref = %d\n", i, ptr[i], x).c_str());
 			return false;
 		}
 

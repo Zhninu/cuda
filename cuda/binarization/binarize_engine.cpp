@@ -5,10 +5,10 @@
 #include "../common/common.h"
 #include "../common/log_message.h"
 
-CBinarizeEngine::CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval)
+CBinarizeEngine::CBinarizeEngine(SDS3D* vol, int thresh, int maxval)
 	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
 	, m_pclsBinarize(NULL)
-	, m_pVolumeData(volumedata)
+	, m_pVolumeData(vol)
 	, m_nThresh(thresh)
 	, m_nMaxVal(maxval)
 	, m_bCreateVol(false)
@@ -18,12 +18,8 @@ CBinarizeEngine::CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval)
 
 	if (!m_pVolumeData)
 	{
-		vdim3 voldim(BINARY_VOLUME_COLUME, BINARY_VOLUME_ROW, BINARY_VOLUME_HEIGHT);
-		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, voldim);
-		if (m_bCreateVol) 
-		{
-			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
-		}
+		vdim3 dim(BINARY_VOLUME_COLUME, BINARY_VOLUME_ROW, BINARY_VOLUME_HEIGHT);
+		constructVol(dim);
 	}
 }
 
@@ -39,13 +35,7 @@ CBinarizeEngine::CBinarizeEngine(vdim3 dim, int thresh, int maxval)
 		m_pclsBinarize = new CBinarizeGPU;
 
 	if (!m_pVolumeData) 
-	{
-		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, dim);
-		if (m_bCreateVol)
-		{
-			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
-		}
-	}
+		constructVol(dim);
 }
 
 CBinarizeEngine::~CBinarizeEngine()
@@ -53,10 +43,8 @@ CBinarizeEngine::~CBinarizeEngine()
 	if(m_pclsBinarize)
 		delete(reinterpret_cast<CBinarizeGPU *>(m_pclsBinarize));
 
-	if (m_bCreateVol) 
-	{
-		m_bCreateVol = Common::freeVolume(&m_pVolumeData);
-	}
+	if (m_bCreateVol)
+		destroyVol();
 }
 
 
@@ -90,6 +78,30 @@ int CBinarizeEngine::binarize(int argc, char **argv)
 	free(binaryVolGPU.data);
 
 	return nErr;
+}
+
+void CBinarizeEngine::constructVol(vdim3 dim)
+{
+	m_pVolumeData = new SDS3D;
+	m_pVolumeData->data = NULL;
+	m_pVolumeData->dim = dim;
+	m_bCreateVol = Common::mallocArray1D(&m_pVolumeData->data, dim);
+	if (m_bCreateVol)
+	{
+		Common::constructArray(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
+	}
+	else
+	{
+		delete m_pVolumeData;
+		m_pVolumeData = NULL;
+	}
+}
+
+void CBinarizeEngine::destroyVol()
+{
+	m_bCreateVol = Common::freeArray1D(&m_pVolumeData->data);
+	delete m_pVolumeData;
+	m_pVolumeData = NULL;
 }
 
 bool CBinarizeEngine::binarizeHost(binSDS3D& binarydata)

@@ -6,7 +6,7 @@
 
 #define  INTERP_VOLUME_COLUME		512
 #define  INTERP_VOLUME_ROW			512
-#define  INTERP_VOLUME_HEIGHT		1024
+#define  INTERP_VOLUME_HEIGHT		64
 
 #define  CTV_OFFSET 1024
 
@@ -19,14 +19,10 @@ CInterpEngine::CInterpEngine(SDS3D* vol)
 	if(!m_pclsInterp)
 		m_pclsInterp = new CInterpolationGPU;
 
-	if (!vol)
+	if (!m_pVolumeData)
 	{
-		vdim3 voldim(INTERP_VOLUME_COLUME, INTERP_VOLUME_ROW, INTERP_VOLUME_HEIGHT);
-		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, voldim);
-		if (m_bCreateVol)
-		{
-			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
-		}
+		vdim3 dim(INTERP_VOLUME_COLUME, INTERP_VOLUME_ROW, INTERP_VOLUME_HEIGHT);
+		constructVol(dim);
 	}
 }
 
@@ -41,11 +37,7 @@ CInterpEngine::CInterpEngine(vdim3  dim)
 
 	if (!m_pVolumeData) 
 	{
-		m_bCreateVol = Common::mallocVolume(&m_pVolumeData, dim);
-		if (m_bCreateVol)
-		{
-			Common::initRandData(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
-		}
+		constructVol(dim);
 	}
 }
 
@@ -55,7 +47,31 @@ CInterpEngine:: ~CInterpEngine()
 		delete(reinterpret_cast<CInterpolationGPU *>(m_pclsInterp));
 
 	if (m_bCreateVol)
-		m_bCreateVol = Common::freeVolume(&m_pVolumeData);
+		destroyVol();
+}
+
+void CInterpEngine::constructVol(vdim3 dim)
+{
+	m_pVolumeData = new SDS3D;
+	m_pVolumeData->data = NULL;
+	m_pVolumeData->dim = dim;
+	m_bCreateVol = Common::mallocArray1D(&m_pVolumeData->data, dim);
+	if (m_bCreateVol)
+	{
+		Common::constructArray(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
+	}
+	else
+	{
+		delete m_pVolumeData;
+		m_pVolumeData = NULL;
+	}
+}
+
+void CInterpEngine::destroyVol()
+{
+	m_bCreateVol = Common::freeArray1D(&m_pVolumeData->data);
+	delete m_pVolumeData;
+	m_pVolumeData = NULL;
 }
 
 int CInterpEngine::interp(int argc, char **argv)
@@ -87,10 +103,10 @@ bool CInterpEngine::interpHost(ipSDS3D& ipdata)
 	array1D.data = m_pVolumeData->data;
 	array1D.size = Common::calcDim(dimVol);
 	SDS2D  array2D;
-	Common::allocArray2D(&array2D.data, dimVol);
+	Common::mallocArray2D(&array2D.data, dimVol);
 	array2D.dim.col = dimVol.col * dimVol.row;
 	array2D.dim.row = dimVol.hei;
-	Common::convertArray2D(&array1D, &array2D, cvArray_1DTo2D);
+	Common::convertArray(&array1D, &array2D, cvArray_1DTo2D);
 	//convert array to 2D
 
 	unsigned long nInterpSize = Common::calcDim(ipdata.dim);

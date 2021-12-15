@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	int nErr = EC_OK;
 
-	Module nMType = Common::findModeType(argv[1]);
+	Module nMType = Common::findMode(argv[1]);
 
 	//Binary
 	if (nMType == Module_Binary

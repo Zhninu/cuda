@@ -15,6 +15,10 @@ public:
 private:
 	bool interpHost(ipSDS3D& ipdata);
 	bool interpDev(ipSDS3D& ipdata);
+
+private:
+	void constructVol(vdim3 dim);
+	void destroyVol();
 	void constructInterp(ipSDS3D& ipdata, float ratio);
 	void freeInterp(ipSDS3D& ipdata);
 

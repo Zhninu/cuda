@@ -9,7 +9,7 @@
 class CBinarizeEngine
 {
 public:
-	CBinarizeEngine(SDS3D* volumedata, int thresh, int maxval);
+	CBinarizeEngine(SDS3D* vol, int thresh, int maxval);
 	CBinarizeEngine(vdim3  dim, int thresh, int maxval);
 	~CBinarizeEngine();
 
@@ -17,6 +17,8 @@ public:
 	int  binarize(int argc, char **argv);
 
 private: 
+	void constructVol(vdim3 dim);
+	void destroyVol();
 	bool binarizeHost(binSDS3D& binarydata);
 	bool binarizeDev(binSDS3D& binarydata);
 
