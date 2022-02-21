@@ -16,6 +16,7 @@
     <ClCompile Include="common\log_message.cpp" />
     <ClCompile Include="common\timer.cpp" />
     <ClCompile Include="interpolation\interpolation_engine.cpp" />
+    <ClCompile Include="source\base_engine.cpp" />
     <ClCompile Include="source\cuda_main.cpp" />
     <ClCompile Include="source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -31,10 +32,12 @@
     <ClInclude Include="common\timer.h" />
     <ClInclude Include="demo\cuda_keneral.cuh" />
     <ClInclude Include="demo\cuda_verify.cuh" />
+    <ClInclude Include="include\base_engine.h" />
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\typedef.h" />
     <ClInclude Include="interpolation\interpolation_engine.h" />
     <ClInclude Include="interpolation\interpolation_gpu.cuh" />
+    <ClInclude Include="interpolation\interpolation_kernel.cuh" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="binarization\binarize_gpu.cu" />
@@ -42,6 +45,7 @@
     <CudaCompile Include="demo\cuda_keneral.cu" />
     <CudaCompile Include="demo\cuda_verify.cu" />
     <CudaCompile Include="interpolation\interpolation_gpu.cu" />
+    <CudaCompile Include="interpolation\interpolation_kernel.cu" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="demo\Readme.txt" />

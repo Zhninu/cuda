@@ -5,48 +5,32 @@
 #include "../common/common.h"
 #include "../common/log_message.h"
 
-CBinarizeEngine::CBinarizeEngine(SDS3D* vol, int thresh, int maxval)
-	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
-	, m_pclsBinarize(NULL)
-	, m_pVolumeData(vol)
+CBinarizeEngine::CBinarizeEngine(SDS3D* vol, int thresh, int maxval) 
+	: CBaseEngine(vol)
 	, m_nThresh(thresh)
 	, m_nMaxVal(maxval)
-	, m_bCreateVol(false)
 {
-	if(!m_pclsBinarize)
-		m_pclsBinarize = new CBinarizeGPU;
+	if(!m_pCudaEngine)
+		m_pCudaEngine = new CBinarizeGPU;
 
-	if (!m_pVolumeData)
-	{
-		vdim3 dim(BINARY_VOLUME_COLUME, BINARY_VOLUME_ROW, BINARY_VOLUME_HEIGHT);
-		constructVol(dim);
-	}
+	m_pMoudle = LOG_BINARIZE_ENGINE_MODULE;
 }
 
-CBinarizeEngine::CBinarizeEngine(vdim3 dim, int thresh, int maxval)
-	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
-	, m_pclsBinarize(NULL)
-	, m_pVolumeData(NULL)
+CBinarizeEngine::CBinarizeEngine(vdim3 dim, int thresh, int maxval) 
+	: CBaseEngine(dim)
 	, m_nThresh(thresh)
 	, m_nMaxVal(maxval)
-	, m_bCreateVol(false)
 {
-	if (!m_pclsBinarize)
-		m_pclsBinarize = new CBinarizeGPU;
+	if (!m_pCudaEngine)
+		m_pCudaEngine = new CBinarizeGPU;
 
-	if (!m_pVolumeData) 
-		constructVol(dim);
+	m_pMoudle = LOG_BINARIZE_ENGINE_MODULE;
 }
 
 CBinarizeEngine::~CBinarizeEngine()
 {
-	if(m_pclsBinarize)
-		delete(reinterpret_cast<CBinarizeGPU *>(m_pclsBinarize));
 
-	if (m_bCreateVol)
-		destroyVol();
 }
-
 
 int CBinarizeEngine::binarize(int argc, char **argv)
 {
@@ -78,30 +62,6 @@ int CBinarizeEngine::binarize(int argc, char **argv)
 	free(binaryVolGPU.data);
 
 	return nErr;
-}
-
-void CBinarizeEngine::constructVol(vdim3 dim)
-{
-	m_pVolumeData = new SDS3D;
-	m_pVolumeData->data = NULL;
-	m_pVolumeData->dim = dim;
-	m_bCreateVol = Common::mallocArray1D(&m_pVolumeData->data, dim);
-	if (m_bCreateVol)
-	{
-		Common::constructArray(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
-	}
-	else
-	{
-		delete m_pVolumeData;
-		m_pVolumeData = NULL;
-	}
-}
-
-void CBinarizeEngine::destroyVol()
-{
-	m_bCreateVol = Common::freeArray1D(&m_pVolumeData->data);
-	delete m_pVolumeData;
-	m_pVolumeData = NULL;
 }
 
 bool CBinarizeEngine::binarizeHost(binSDS3D& binarydata)
@@ -160,9 +120,9 @@ bool CBinarizeEngine::binarizeDev(binSDS3D& binarydata)
 
 	do
 	{
-		if (!m_pVolumeData)
+		if (!m_pVolumeData || !m_pCudaEngine)
 		{
-			log_error(m_pMoudle, LogFormatA_A("Volume data is Null!").c_str());
+			log_error(m_pMoudle, LogFormatA_A("Cuda engine or volume data is Null!").c_str());
 			break;
 		}
 
@@ -175,9 +135,9 @@ bool CBinarizeEngine::binarizeDev(binSDS3D& binarydata)
 		}
 
 		m_stTimer.startTimer("Binarize on GPU");
-		reinterpret_cast<CBinarizeGPU *>(m_pclsBinarize)->prepare(m_pVolumeData);
-		reinterpret_cast<CBinarizeGPU *>(m_pclsBinarize)->run(binarydata);
-		reinterpret_cast<CBinarizeGPU *>(m_pclsBinarize)->release();
+		reinterpret_cast<CBinarizeGPU *>(m_pCudaEngine)->prepare(m_pVolumeData);
+		reinterpret_cast<CBinarizeGPU *>(m_pCudaEngine)->run(binarydata);
+		reinterpret_cast<CBinarizeGPU *>(m_pCudaEngine)->release();
 		m_stTimer.stopTimer("Binarize on GPU");
 
 		bRet = true;

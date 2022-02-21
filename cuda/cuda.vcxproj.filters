@@ -42,6 +42,9 @@
     <ClCompile Include="interpolation\interpolation_engine.cpp">
       <Filter>Interpolation</Filter>
     </ClCompile>
+    <ClCompile Include="source\base_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\common.h">
@@ -80,6 +83,12 @@
     <ClInclude Include="demo\cuda_keneral.cuh">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="include\base_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="interpolation\interpolation_kernel.cuh">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="binarization\binarize_kernel.cu">
@@ -96,6 +105,9 @@
     </CudaCompile>
     <CudaCompile Include="demo\cuda_keneral.cu">
       <Filter>Demo</Filter>
+    </CudaCompile>
+    <CudaCompile Include="interpolation\interpolation_kernel.cu">
+      <Filter>Interpolation</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>

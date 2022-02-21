@@ -46,7 +46,7 @@ void Common::convertArray(SDS1D* a1d, SDS2D* a2d, cvArray type)
 	if (array1D->size != calcDim(array2D->dim))
 		return;
 
-	if (type != cvArray_1DTo2D || type != cvArray_2DTo1D)
+	if (type != cvArray_1DTo2D && type != cvArray_2DTo1D)
 		return;
 
 	unsigned int size = array1D->size;

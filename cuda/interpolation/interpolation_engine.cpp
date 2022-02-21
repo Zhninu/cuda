@@ -6,72 +6,30 @@
 
 #define  INTERP_VOLUME_COLUME		512
 #define  INTERP_VOLUME_ROW			512
-#define  INTERP_VOLUME_HEIGHT		64
+#define  INTERP_VOLUME_HEIGHT		512
 
 #define  CTV_OFFSET 1024
 
-CInterpEngine::CInterpEngine(SDS3D* vol)
-	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
-	, m_pclsInterp(NULL)
-	, m_pVolumeData(vol)
-	, m_bCreateVol(false)
+CInterpEngine::CInterpEngine(SDS3D* vol) : CBaseEngine(vol)
 {
-	if(!m_pclsInterp)
-		m_pclsInterp = new CInterpolationGPU;
+	m_pMoudle = LOG_BINARIZE_ENGINE_MODULE;
 
-	if (!m_pVolumeData)
-	{
-		vdim3 dim(INTERP_VOLUME_COLUME, INTERP_VOLUME_ROW, INTERP_VOLUME_HEIGHT);
-		constructVol(dim);
-	}
+	if(!m_pCudaEngine)
+		m_pCudaEngine = new CInterpolationGPU;
 }
 
-CInterpEngine::CInterpEngine(vdim3  dim)
-	: m_pMoudle(LOG_BINARIZE_ENGINE_MODULE)
-	, m_pclsInterp(NULL)
-	, m_pVolumeData(NULL)
-	, m_bCreateVol(false)
+CInterpEngine::CInterpEngine(vdim3 dim) : CBaseEngine(dim)
 {
-	if (!m_pclsInterp)
-		m_pclsInterp = new CInterpolationGPU;
+	m_pMoudle = LOG_BINARIZE_ENGINE_MODULE;
 
-	if (!m_pVolumeData) 
-	{
-		constructVol(dim);
-	}
+	if (!m_pCudaEngine)
+		m_pCudaEngine = new CInterpolationGPU;
 }
 
 CInterpEngine:: ~CInterpEngine()
 {
-	if(m_pclsInterp)
-		delete(reinterpret_cast<CInterpolationGPU *>(m_pclsInterp));
-
-	if (m_bCreateVol)
-		destroyVol();
-}
-
-void CInterpEngine::constructVol(vdim3 dim)
-{
-	m_pVolumeData = new SDS3D;
-	m_pVolumeData->data = NULL;
-	m_pVolumeData->dim = dim;
-	m_bCreateVol = Common::mallocArray1D(&m_pVolumeData->data, dim);
-	if (m_bCreateVol)
-	{
-		Common::constructArray(m_pVolumeData->data, Common::calcDim(m_pVolumeData->dim));
-	}
-	else
-	{
-		delete m_pVolumeData;
-		m_pVolumeData = NULL;
-	}
-}
-
-void CInterpEngine::destroyVol()
-{
-	m_bCreateVol = Common::freeArray1D(&m_pVolumeData->data);
-	delete m_pVolumeData;
-	m_pVolumeData = NULL;
+	if(m_pCudaEngine)
+		delete(reinterpret_cast<CInterpolationGPU *>(m_pCudaEngine));
 }
 
 int CInterpEngine::interp(int argc, char **argv)
@@ -81,12 +39,12 @@ int CInterpEngine::interp(int argc, char **argv)
 	constructInterp(h_Inter, ratio);
 	constructInterp(d_Inter, ratio);
 
-	unsigned long nSize = Common::calcDim(h_Inter.dim);
 	//interpolation
 	interpHost(h_Inter);
 	interpDev(d_Inter);
 
 	//check result
+	unsigned long nSize = Common::calcDim(h_Inter.dim);
 	Common::campareResult(h_Inter.data, d_Inter.data, nSize);
 
 	freeInterp(h_Inter);
@@ -109,6 +67,7 @@ bool CInterpEngine::interpHost(ipSDS3D& ipdata)
 	Common::convertArray(&array1D, &array2D, cvArray_1DTo2D);
 	//convert array to 2D
 
+	m_stTimer.startTimer("Interpolation on host");
 	unsigned long nInterpSize = Common::calcDim(ipdata.dim);
 	short** pVolumeData = array2D.data;
 	int nSliceWid = dimVol.col;
@@ -124,7 +83,10 @@ bool CInterpEngine::interpHost(ipSDS3D& ipdata)
 		int nz = (int)ptInterp.q3;
 
 		if (nx < 0 || nx > nSliceWid - 1 || ny < 0 || ny > nSliceHei - 1 || nz < 0 || nz > nSliceNum - 1) 
-			return nVal;
+		{
+			ipdata.data[count] = nVal;
+			continue;
+		}
 
 		int nz1 = nz == nSliceNum - 1 ? nz : nz + 1;
 		int ny1 = ny == nSliceHei - 1 ? ny : ny + 1;
@@ -152,6 +114,7 @@ bool CInterpEngine::interpHost(ipSDS3D& ipdata)
 
 		ipdata.data[count] = nVal;
 	}
+	m_stTimer.stopTimer("Interpolation on host");
 
 	Common::freeArray2D(&array2D.data, dimVol);
 
@@ -160,6 +123,26 @@ bool CInterpEngine::interpHost(ipSDS3D& ipdata)
 
 bool CInterpEngine::interpDev(ipSDS3D& ipdata)
 {
+	bool bRet = false;
+
+	do
+	{
+		if (!m_pVolumeData || !m_pCudaEngine)
+		{
+			log_error(m_pMoudle, LogFormatA_A("Cuda engine or volume data is Null!").c_str());
+			break;
+		}
+
+		m_stTimer.startTimer("Interpolation on GPU");
+		reinterpret_cast<CInterpolationGPU *>(m_pCudaEngine)->prepare(m_pVolumeData);
+		reinterpret_cast<CInterpolationGPU *>(m_pCudaEngine)->run(ipdata);
+		reinterpret_cast<CInterpolationGPU *>(m_pCudaEngine)->release();
+		m_stTimer.stopTimer("Interpolation on GPU");
+
+		bRet = true;
+
+	} while (0);
+
 	return true;
 }
 

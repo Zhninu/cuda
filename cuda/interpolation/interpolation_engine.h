@@ -1,12 +1,13 @@
 #pragma once
 #include "typedef.h"
+#include "base_engine.h"
 #include "../common/timer.h"
 
-class CInterpEngine
+class CInterpEngine : public CBaseEngine
 {
 public:
 	CInterpEngine(SDS3D* vol);
-	CInterpEngine(vdim3  dim);
+	CInterpEngine(vdim3 dim);
 	~CInterpEngine();
 
 public:
@@ -15,17 +16,6 @@ public:
 private:
 	bool interpHost(ipSDS3D& ipdata);
 	bool interpDev(ipSDS3D& ipdata);
-
-private:
-	void constructVol(vdim3 dim);
-	void destroyVol();
 	void constructInterp(ipSDS3D& ipdata, float ratio);
 	void freeInterp(ipSDS3D& ipdata);
-
-private:
-	const char*   m_pMoudle;
-	void *		  m_pclsInterp;
-	SDS3D*		  m_pVolumeData;
-	bool		  m_bCreateVol;
-	CTimer		  m_stTimer;
 };
